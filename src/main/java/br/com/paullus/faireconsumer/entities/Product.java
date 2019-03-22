@@ -5,14 +5,16 @@ package br.com.paullus.faireconsumer.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
-public class Product implements Serializable {
+public class Product implements Serializable, IFaireEntity {
 	private static final long serialVersionUID = 1L;
 	
 	private String id;
@@ -25,8 +27,10 @@ public class Product implements Serializable {
 	private String name;
 	private BigDecimal unit_multiplier;
 	private List<ProductOption> options;
-	private LocalDateTime created_at;
-	private LocalDateTime updated_at;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
+	private Date created_at;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
+	private Date updated_at;
 	public String getId() {
 		return id;
 	}
@@ -57,10 +61,14 @@ public class Product implements Serializable {
 	public List<ProductOption> getOptions() {
 		return options;
 	}
-	public LocalDateTime getCreated_at() {
+	public Date getCreated_at() {
 		return created_at;
 	}
-	public LocalDateTime getUpdated_at() {
+	public Date getUpdated_at() {
 		return updated_at;
+	}
+	@Override
+	public String toString() {
+		return "[Id: '" + id + "', Brand_id = '" + brand_id + "', Name: '" + name + "', Short description: '" + short_description + "']";
 	}
 }

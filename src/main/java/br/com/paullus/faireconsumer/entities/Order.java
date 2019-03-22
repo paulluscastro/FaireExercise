@@ -5,23 +5,25 @@ package br.com.paullus.faireconsumer.entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import br.com.paullus.faireconsumer.enums.OrderState;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
-public class ProductOption implements Serializable, IFaireEntity {
+public class Order implements Serializable, IFaireEntity {
 	private static final long serialVersionUID = 1L;
-	
+
 	private String id;
-	private String product_id;
-	private boolean active;
-	private String name;
-	private String sku;
-	private int available_quantity;
-	private Date backordered_until;
+	private OrderState state;
+	private String ship_after;
+	private List<OrderItem> items;
+	private List<Shipment> shipments;
+	private Address address;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
 	private Date created_at;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
@@ -29,28 +31,29 @@ public class ProductOption implements Serializable, IFaireEntity {
 	public String getId() {
 		return id;
 	}
-	public String getProduct_id() {
-		return product_id;
+	public OrderState getState() {
+		return state;
 	}
-	public boolean isActive() {
-		return active;
+	public String getShip_after() {
+		return ship_after;
 	}
-	public String getName() {
-		return name;
+	public List<OrderItem> getItems() {
+		return items;
 	}
-	public String getSku() {
-		return sku;
+	public List<Shipment> getShipments() {
+		return shipments;
 	}
-	public int getAvailable_quantity() {
-		return available_quantity;
-	}
-	public Date getBackordered_until() {
-		return backordered_until;
+	public Address getAddress() {
+		return address;
 	}
 	public Date getCreated_at() {
 		return created_at;
 	}
 	public Date getUpdated_at() {
 		return updated_at;
+	}
+	@Override
+	public String toString() {
+		return "[id = '" + id + "', State = '" + state + "', Total items = " + items.size() + "]";
 	}
 }

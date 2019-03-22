@@ -8,20 +8,20 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import br.com.paullus.faireconsumer.enums.Carrier;
+
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
-public class ProductOption implements Serializable, IFaireEntity {
+public class Shipment implements Serializable, IFaireEntity {
 	private static final long serialVersionUID = 1L;
 	
 	private String id;
-	private String product_id;
-	private boolean active;
-	private String name;
-	private String sku;
-	private int available_quantity;
-	private Date backordered_until;
+	private String order_id;
+	private String maker_cost_cents;
+	private Carrier carrier;
+	private String tracking_code;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
 	private Date created_at;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
@@ -29,23 +29,17 @@ public class ProductOption implements Serializable, IFaireEntity {
 	public String getId() {
 		return id;
 	}
-	public String getProduct_id() {
-		return product_id;
+	public String getOrder_id() {
+		return order_id;
 	}
-	public boolean isActive() {
-		return active;
+	public String getMaker_cost_cents() {
+		return maker_cost_cents;
 	}
-	public String getName() {
-		return name;
+	public Carrier getCarrier() {
+		return carrier;
 	}
-	public String getSku() {
-		return sku;
-	}
-	public int getAvailable_quantity() {
-		return available_quantity;
-	}
-	public Date getBackordered_until() {
-		return backordered_until;
+	public String getTracking_code() {
+		return tracking_code;
 	}
 	public Date getCreated_at() {
 		return created_at;
