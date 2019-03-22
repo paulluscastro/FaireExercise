@@ -3,7 +3,6 @@
  */
 package br.com.paullus.faireconsumer.services;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,6 +30,7 @@ import br.com.paullus.faireconsumer.dtos.OrderOutputDTO;
 import br.com.paullus.faireconsumer.dtos.OrdersSearchOutputDTO;
 import br.com.paullus.faireconsumer.dtos.ProductOptionOutputDTO;
 import br.com.paullus.faireconsumer.dtos.ProductOutputDTO;
+import br.com.paullus.faireconsumer.dtos.WorstSellerOutputDTO;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
@@ -79,13 +79,13 @@ public class OrderService implements IOrderService {
 			ProductOutputDTO product = productService.get(oi.getProduct_id());
 			if (product == null)
 			{
-		        logger.info("Product id does not exist '" + oi.getProduct_id() + "'");
+		        // logger.info("Product id does not exist '" + oi.getProduct_id() + "'");
 		        return false;
 			}
 			ProductOptionOutputDTO productOption = productService.findOption(oi.getProduct_option_id());
 			if (productOption == null)
 			{
-		        logger.info("ProductOption id does not exist '" + oi.getProduct_option_id() + "'");
+		        // logger.info("ProductOption id does not exist '" + oi.getProduct_option_id() + "'");
 		        return false;
 			}
 		}
@@ -109,11 +109,13 @@ public class OrderService implements IOrderService {
 		for(OrderItemOutputDTO oi : order.getItems())
 		{
 			ProductOutputDTO product = productService.get(oi.getProduct_id());
+			if (!product.isActive()) return false;
 			ProductOptionOutputDTO productOption = product.getOptions().stream().filter(po -> po.getId().equals(oi.getProduct_option_id())).findFirst().orElse(null);
+			if (!productOption.isActive()) return false;
 			if (productOption.getAvailable_quantity() < total.get(oi.getProduct_option_id()))
 			{
-		        logger.info("[ORDER ID: '" + order.getId() + "', OI_ID: '" + oi.getId() + "']");
-		        logger.info("Total product options for '" + productOption.getName() + "' not available [Has : " + productOption.getAvailable_quantity() + ", Ordered: " + total.get(oi.getProduct_option_id()) + "]");
+		        // logger.info("[ORDER ID: '" + order.getId() + "', OI_ID: '" + oi.getId() + "']");
+		        // logger.info("Total product options for '" + productOption.getName() + "' not available [Has : " + productOption.getAvailable_quantity() + ", Ordered: " + total.get(oi.getProduct_option_id()) + "]");
 		        oi.backorder();
 		        return false;
 			}
@@ -153,7 +155,7 @@ public class OrderService implements IOrderService {
 		if (!checkAcceptability(order))
 		{
 			/// createBackorder(order);
-			logger.info("Create backorder for: " + order.getId());
+			// logger.info("Create backorder for: " + order.getId());
 			return;
 		}
 		updateLevels(order);
@@ -178,7 +180,9 @@ public class OrderService implements IOrderService {
 			if (current.getValue() > max.getValue())
 				max = current;
 		}
-		return new BestSellerOutputDTO(productService.findOption(max.getKey()), max.getValue());
+		ProductOptionOutputDTO option = productService.findOption(max.getKey());
+		ProductOutputDTO product = productService.get(option.getProduct_id());
+		return new BestSellerOutputDTO(product, productService.findOption(max.getKey()), max.getValue());
 	}
 	@Override
 	public OrderOutputDTO getLargestOrder() {
@@ -204,5 +208,56 @@ public class OrderService implements IOrderService {
 				max = current;
 		}
 		return new BestBuyerOutputDTO(max.getKey(), max.getValue());
+	}
+	@Override
+	public BestSellerOutputDTO getMostRequiredOutOfStock() {
+		Map<String, Long> totals  = new HashMap<>();
+		list()
+		.stream()
+		// .filter(order.getState() == OrderState.PROCESSING)
+		.forEach(o ->{
+			o.getItems()
+				.stream()
+				.filter(oi -> oi.isBackorderered())
+				.forEach(oi ->{
+					if (!totals.containsKey(oi.getProduct_option_id()))
+						totals.put(oi.getProduct_option_id(), 0L);
+					totals.put(oi.getProduct_option_id(), totals.get(oi.getProduct_option_id()) + oi.getQuantity()); 
+				});
+		});
+		Iterator<Entry<String, Long>> iterator = totals.entrySet().iterator();
+		Entry<String, Long> max = iterator.next();
+		while(iterator.hasNext()) {
+			Entry<String, Long> current = iterator.next();
+			if (current.getValue() > max.getValue())
+				max = current;
+		}
+		ProductOptionOutputDTO option = productService.findOption(max.getKey());
+		ProductOutputDTO product = productService.get(option.getProduct_id());
+		return new BestSellerOutputDTO(product, productService.findOption(max.getKey()), max.getValue());
+	}
+	@Override
+	public WorstSellerOutputDTO getNotSoldWithHighestStock() {
+		List<ProductOptionOutputDTO> stock = new ArrayList<>();
+		productService.list()
+			.stream()
+			.forEach(p -> stock.addAll(p.getOptions()));
+		list()
+			.stream()
+			// .filter(order.getState() == OrderState.PROCESSING)
+			.forEach(o ->{
+				o.getItems().stream().forEach(oi ->{
+					ProductOptionOutputDTO option = stock.stream().filter(po -> po.getId().equals(oi.getId())).findFirst().orElse(null);
+					stock.remove(option);
+			});
+		});
+		if (stock.size() == 0)
+			return new WorstSellerOutputDTO(null, null, 0);
+		else
+		{
+			ProductOptionOutputDTO notSoldWithHighStock = stock.stream().max(Comparator.comparing(ProductOptionOutputDTO::getAvailable_quantity)).get();
+			ProductOutputDTO product = productService.get(notSoldWithHighStock.getProduct_id());
+			return new WorstSellerOutputDTO(product, notSoldWithHighStock, notSoldWithHighStock.getAvailable_quantity());
+		}
 	}
 }
