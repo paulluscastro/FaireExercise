@@ -7,13 +7,18 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import br.com.paullus.faireconsumer.dtos.OrderItemOutputDTO;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
+@Entity
 public class OrderItem implements IFaireEntity {
+    @Id
 	private String id;
 	private Order order;
 	private Product product;

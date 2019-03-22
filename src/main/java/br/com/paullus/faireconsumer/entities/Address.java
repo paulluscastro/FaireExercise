@@ -5,6 +5,9 @@ package br.com.paullus.faireconsumer.entities;
 
 import java.util.UUID;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +17,12 @@ import br.com.paullus.faireconsumer.dtos.AddressOutputDTO;
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
+@Entity
 public class Address implements IFaireEntity {
     private static final Logger logger = LoggerFactory.getLogger(Address.class);
 	
-	private String id;
+    @Id
+    private String id;
 	private String name;
 	private String address1;
 	private String address2;

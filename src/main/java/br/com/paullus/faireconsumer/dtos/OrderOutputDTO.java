@@ -24,7 +24,7 @@ public class OrderOutputDTO implements Serializable {
 	private Date ship_after;
 	private List<OrderItemOutputDTO> items;
 	private List<ShipmentOutputDTO> shipments;
-	private AddressOutputDTO addressOutputDTO;
+	private AddressOutputDTO address;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
 	private Date created_at;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
@@ -45,7 +45,7 @@ public class OrderOutputDTO implements Serializable {
 		return shipments;
 	}
 	public AddressOutputDTO getAddress() {
-		return addressOutputDTO;
+		return address;
 	}
 	public Date getCreated_at() {
 		return created_at;

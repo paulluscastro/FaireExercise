@@ -9,13 +9,23 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import br.com.paullus.faireconsumer.dtos.ProductOutputDTO;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
+@Entity
 public class Product implements IFaireEntity {
+    @Id
 	private String id;
 	private String brandId;
 	private String shortDescription;
@@ -25,6 +35,7 @@ public class Product implements IFaireEntity {
 	private boolean active;
 	private String name;
 	private BigDecimal unitMultiplier;
+	@OneToMany(mappedBy	= "product", fetch = FetchType.LAZY)
 	private List<ProductOption> options;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;

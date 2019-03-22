@@ -20,7 +20,7 @@ public class ProductOptionOutputDTO implements Serializable {
 	private boolean active;
 	private String name;
 	private String sku;
-	private int available_quantity;
+	private long available_quantity;
 	private Date backordered_until;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
 	private Date created_at;
@@ -41,7 +41,7 @@ public class ProductOptionOutputDTO implements Serializable {
 	public String getSku() {
 		return sku;
 	}
-	public int getAvailable_quantity() {
+	public long getAvailable_quantity() {
 		return available_quantity;
 	}
 	public Date getBackordered_until() {
@@ -52,5 +52,9 @@ public class ProductOptionOutputDTO implements Serializable {
 	}
 	public Date getUpdated_at() {
 		return updated_at;
+	}
+	public void sell(long quantity)
+	{
+		available_quantity -= quantity;
 	}
 }

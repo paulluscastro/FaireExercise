@@ -38,7 +38,7 @@ public class FaireConnection implements IFaireConnection {
     	return objectMapper;
     }
 	public RestTemplate getRestTemplate() {
-    	RestTemplate restTemplate = new RestTemplate();
+		RestTemplate restTemplate = new RestTemplate();
     	List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
     	MappingJackson2HttpMessageConverter jsonMessageConverter = new MappingJackson2HttpMessageConverter();
     	jsonMessageConverter.setObjectMapper(getObjectMapper());
@@ -46,7 +46,7 @@ public class FaireConnection implements IFaireConnection {
     	restTemplate.setMessageConverters(messageConverters);
     	return restTemplate;
     }
-    public HttpEntity<String> getHttpEntity(){
+    public HttpHeaders getHeaders(){
     	if (key == null || key.trim().equals(""))
     		logger.warn("X-FAIRE-ACCESS-TOKEN was not provided");
     	else
@@ -55,6 +55,9 @@ public class FaireConnection implements IFaireConnection {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("X-FAIRE-ACCESS-TOKEN", key);
-        return new HttpEntity<String>("parameters", headers);
+        return headers;
+    }
+    public HttpEntity<String> getHttpEntity(){
+        return new HttpEntity<String>("parameters", getHeaders());
     }
 }

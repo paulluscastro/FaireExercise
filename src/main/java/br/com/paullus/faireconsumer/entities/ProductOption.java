@@ -6,6 +6,10 @@ package br.com.paullus.faireconsumer.entities;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,15 +19,18 @@ import br.com.paullus.faireconsumer.dtos.ProductOptionOutputDTO;
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
+@Entity
 public class ProductOption implements IFaireEntity {
     private static final Logger logger = LoggerFactory.getLogger(ProductOption.class);
 
+    @Id
     private String id;
+    @ManyToOne
 	private Product product;
 	private boolean active;
 	private String name;
 	private String sku;
-	private int availableQuantity;
+	private long availableQuantity;
 	private LocalDateTime backorderedUntil;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
@@ -55,7 +62,7 @@ public class ProductOption implements IFaireEntity {
 	public String getSku() {
 		return sku;
 	}
-	public int getAvailableQuantity() {
+	public long getAvailableQuantity() {
 		return availableQuantity;
 	}
 	public LocalDateTime getBackorderedUntil() {

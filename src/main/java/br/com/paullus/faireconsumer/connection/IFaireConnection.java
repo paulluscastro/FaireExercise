@@ -4,6 +4,7 @@
 package br.com.paullus.faireconsumer.connection;
 
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -13,4 +14,5 @@ import org.springframework.web.client.RestTemplate;
 public interface IFaireConnection {
 	RestTemplate getRestTemplate();
     HttpEntity<String> getHttpEntity();
+    HttpHeaders getHeaders();
 }

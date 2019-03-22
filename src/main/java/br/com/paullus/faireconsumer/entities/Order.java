@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import br.com.paullus.faireconsumer.dtos.OrderOutputDTO;
 import br.com.paullus.faireconsumer.enums.OrderState;
 
@@ -16,7 +19,9 @@ import br.com.paullus.faireconsumer.enums.OrderState;
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
+@Entity
 public class Order implements IFaireEntity {
+    @Id
 	private String id;
 	private OrderState state;
 	private LocalDateTime shipAfter;

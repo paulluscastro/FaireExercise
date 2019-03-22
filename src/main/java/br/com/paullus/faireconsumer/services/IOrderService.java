@@ -2,8 +2,9 @@ package br.com.paullus.faireconsumer.services;
 
 import java.util.List;
 
-import br.com.paullus.faireconsumer.entities.Order;
+import br.com.paullus.faireconsumer.dtos.OrderOutputDTO;
 
 public interface IOrderService {
-	List<Order> list();
+	List<OrderOutputDTO> list();
+	void process(OrderOutputDTO order);
 }

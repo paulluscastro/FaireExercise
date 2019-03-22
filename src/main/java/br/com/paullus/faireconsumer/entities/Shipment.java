@@ -7,6 +7,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +20,11 @@ import br.com.paullus.faireconsumer.enums.Carrier;
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
+@Entity
 public class Shipment implements IFaireEntity {
     private static final Logger logger = LoggerFactory.getLogger(Shipment.class);
 
+    @Id
     private String id;
 	private Order order;
 	private BigDecimal makerCost;

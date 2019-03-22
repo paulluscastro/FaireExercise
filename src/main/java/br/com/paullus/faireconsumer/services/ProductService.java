@@ -17,11 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.paullus.faireconsumer.connection.IFaireConnection;
+import br.com.paullus.faireconsumer.dtos.ProductOptionOutputDTO;
 import br.com.paullus.faireconsumer.dtos.ProductOutputDTO;
 import br.com.paullus.faireconsumer.dtos.ProductsSearchOutputDTO;
-import br.com.paullus.faireconsumer.entities.Product;
-import br.com.paullus.faireconsumer.entities.ProductOption;
-import br.com.paullus.faireconsumer.repositories.IGenericRepository;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
@@ -31,12 +29,9 @@ import br.com.paullus.faireconsumer.repositories.IGenericRepository;
 public class ProductService implements IProductService {
 	@Autowired
 	private IFaireConnection connection;
-	@Autowired
-	private IProductOptionService productsOptionService;
-	@Autowired
-	private IGenericRepository<Product> productsRepository;
 
 	private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+	private List<ProductOutputDTO> products = new ArrayList<>();
 
     private ProductsSearchOutputDTO searchProducts(int page) {
         ResponseEntity<ProductsSearchOutputDTO> response = connection
@@ -47,7 +42,7 @@ public class ProductService implements IProductService {
         				new ParameterizedTypeReference<ProductsSearchOutputDTO>(){});
         return response.getBody();
     }
-    private void retrieveAllOrders() {
+    private List<ProductOutputDTO> retrieveAllOrders() {
         List<ProductOutputDTO> productoOutputDTOs = new ArrayList<>();
         int page = 1;
         ProductsSearchOutputDTO searchResult = searchProducts(page++);
@@ -55,32 +50,39 @@ public class ProductService implements IProductService {
         	productoOutputDTOs.addAll(searchResult.getProducts());
         	searchResult = searchProducts(page++);
         }
-        productoOutputDTOs.stream().forEach(p ->{
-        	Product product = productsRepository.create(new Product(p));
-        	p.getOptions().stream().forEach(po -> productsOptionService.create(new ProductOption(product, po)));
-        });
+        return productoOutputDTOs;
     }
     @Override
-	public List<Product> list() {
-        logger.info("Listing all products...");
-        if (productsRepository.list().size() == 0)
-        	retrieveAllOrders();
-        return productsRepository.list();
+	public List<ProductOutputDTO> list() {
+        if (products.size() == 0)
+        	products.addAll(retrieveAllOrders());
+        return Collections.unmodifiableList(products);
 	}
 	@Override
-	public Product get(String id) {
-        logger.info("Find product by id: '" + id + "'");
-		Product product = productsRepository.get(id);
+	public ProductOutputDTO get(String id) {
+		ProductOutputDTO product = list().stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
         if (product == null)
         	logger.info("Product not found...");
 		return product; 
 	}
 	@Override
-	public List<Product> listByBrand(String brandId) {
-        logger.info("Listing products of brand " + brandId + "...");
-		List<Product> branded = list().stream().filter(p -> p.getBrandId().equals(brandId)).collect(Collectors.toList());
-        logger.info("Listed " + branded.size() + " products of brand " + brandId + "...");
+	public List<ProductOutputDTO> listByBrand(String brandId) {
+		List<ProductOutputDTO> branded = list().stream().filter(p -> p.getBrand_id().equals(brandId)).collect(Collectors.toList());
 		return Collections.unmodifiableList(branded); 
+	}
+	@Override
+	public ProductOptionOutputDTO findOption(String productOptionId) {
+		ProductOutputDTO product = list().stream().filter(p -> p.getOptions().stream().filter(po -> po.getId().equals(productOptionId)).count() > 0).findFirst().orElse(null);
+		if (product == null) {
+	        logger.info("Product option does not exist. ID: '" + productOptionId + "'");
+	        return null;
+		}
+		ProductOptionOutputDTO option = product.getOptions().stream().filter(po -> po.getId().equals(productOptionId)).findFirst().orElse(null);
+		if (option == null) {
+	        logger.info("Product option does not exist. ID: '" + productOptionId + "'");
+	        return null;
+		}
+		return option;
 	}
 	
 }
