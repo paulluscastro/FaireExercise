@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: FaireConsumer
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: 1511 IRON
+Implementation-Vendor-Id: br.com.paullus
+Build-Jdk: 1.8.0_191
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/faireConsumer
+Created-By: Maven Integration for Eclipse
+
