@@ -4,6 +4,7 @@
 package br.com.paullus.faireconsumer.dtos;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -56,5 +57,9 @@ public class OrderOutputDTO implements Serializable {
 	@Override
 	public String toString() {
 		return "[id = '" + id + "', State = '" + state + "', Total items = " + items.size() + "]";
+	}
+	public BigDecimal getTotalOrder() {
+		BigDecimal total = items.stream().map(OrderItemOutputDTO::getPrice_cents).reduce(BigDecimal.ZERO, BigDecimal::add);
+		return total;
 	}
 }

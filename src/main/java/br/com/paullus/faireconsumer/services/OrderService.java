@@ -3,14 +3,15 @@
  */
 package br.com.paullus.faireconsumer.services;
 
-import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +22,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.com.paullus.faireconsumer.connection.IFaireConnection;
 import br.com.paullus.faireconsumer.dtos.BackorderItemInputDTO;
+import br.com.paullus.faireconsumer.dtos.BestBuyerOutputDTO;
+import br.com.paullus.faireconsumer.dtos.BestSellerOutputDTO;
 import br.com.paullus.faireconsumer.dtos.OrderItemOutputDTO;
 import br.com.paullus.faireconsumer.dtos.OrderOutputDTO;
 import br.com.paullus.faireconsumer.dtos.OrdersSearchOutputDTO;
 import br.com.paullus.faireconsumer.dtos.ProductOptionOutputDTO;
 import br.com.paullus.faireconsumer.dtos.ProductOutputDTO;
-import br.com.paullus.faireconsumer.enums.OrderState;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
@@ -137,12 +137,6 @@ public class OrderService implements IOrderService {
 		order.getItems().stream().filter(oi -> oi.isBackorderered()).forEach(oi -> {
 			back.add(new BackorderItemInputDTO(oi, productService.findOption(oi.getProduct_option_id()).getAvailable_quantity()));
 		});
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			mapper.writeValue(System.out, back);
-		} catch (IOException e) {
-			logger.error("Deu erro");
-		}
 		HttpEntity<List<BackorderItemInputDTO>> request = new HttpEntity<List<BackorderItemInputDTO>>(back, connection.getHeaders());
 		OrderOutputDTO backorder = connection.getRestTemplate().postForObject(url, request, OrderOutputDTO.class);
 		return backorder;
@@ -158,9 +152,57 @@ public class OrderService implements IOrderService {
 		*/
 		if (!checkAcceptability(order))
 		{
-			createBackorder(order);
+			/// createBackorder(order);
+			logger.info("Create backorder for: " + order.getId());
 			return;
 		}
 		updateLevels(order);
+	}
+	@Override
+	public BestSellerOutputDTO getBestSeller() {
+		Map<String, Long> totals  = new HashMap<>();
+		list()
+		.stream()
+		// .filter(order.getState() == OrderState.PROCESSING)
+		.forEach(o ->{
+			o.getItems().stream().forEach(oi ->{
+				if (!totals.containsKey(oi.getProduct_option_id()))
+					totals.put(oi.getProduct_option_id(), 0L);
+				totals.put(oi.getProduct_option_id(), totals.get(oi.getProduct_option_id()) + oi.getQuantity()); 
+			});
+		});
+		Iterator<Entry<String, Long>> iterator = totals.entrySet().iterator();
+		Entry<String, Long> max = iterator.next();
+		while(iterator.hasNext()) {
+			Entry<String, Long> current = iterator.next();
+			if (current.getValue() > max.getValue())
+				max = current;
+		}
+		return new BestSellerOutputDTO(productService.findOption(max.getKey()), max.getValue());
+	}
+	@Override
+	public OrderOutputDTO getLargestOrder() {
+		OrderOutputDTO largest = list().stream().max(Comparator.comparing(OrderOutputDTO::getTotalOrder)).get();
+		return largest;
+	}
+	@Override
+	public BestBuyerOutputDTO getTopBuyer() {
+		Map<String, Long> buyersPerState = new HashMap<>();
+		list()
+		.stream()
+		// .filter(order.getState() == OrderState.PROCESSING)
+		.forEach(o ->{
+			if (!buyersPerState.containsKey(o.getAddress().getState()))
+				buyersPerState.put(o.getAddress().getState(), 0L);
+			buyersPerState.put(o.getAddress().getState(), buyersPerState.get(o.getAddress().getState()) + 1);
+		});
+		Iterator<Entry<String, Long>> iterator = buyersPerState.entrySet().iterator();
+		Entry<String, Long> max = iterator.next();
+		while(iterator.hasNext()) {
+			Entry<String, Long> current = iterator.next();
+			if (current.getValue() > max.getValue())
+				max = current;
+		}
+		return new BestBuyerOutputDTO(max.getKey(), max.getValue());
 	}
 }
