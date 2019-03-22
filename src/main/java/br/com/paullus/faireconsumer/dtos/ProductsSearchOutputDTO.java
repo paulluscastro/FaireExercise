@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.paullus.faireconsumer.entities;
+package br.com.paullus.faireconsumer.dtos;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,13 +10,13 @@ import java.util.List;
  * @author 1511 IRON
  *
  */
-public class ProductsSearch implements Serializable {
+public class ProductsSearchOutputDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private List<Product> products;
+	private List<ProductOutputDTO> products;
 	private int page;
 	private int limit;
-	public List<Product> getProducts() {
+	public List<ProductOutputDTO> getProducts() {
 		return products;
 	}
 	public int getPage() {

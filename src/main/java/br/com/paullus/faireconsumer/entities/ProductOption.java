@@ -3,34 +3,48 @@
  */
 package br.com.paullus.faireconsumer.entities;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import br.com.paullus.faireconsumer.dtos.ProductOptionOutputDTO;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
-public class ProductOption implements Serializable, IFaireEntity {
-	private static final long serialVersionUID = 1L;
-	
-	private String id;
-	private String product_id;
+public class ProductOption implements IFaireEntity {
+    private static final Logger logger = LoggerFactory.getLogger(ProductOption.class);
+
+    private String id;
+	private Product product;
 	private boolean active;
 	private String name;
 	private String sku;
-	private int available_quantity;
-	private Date backordered_until;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
-	private Date created_at;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
-	private Date updated_at;
+	private int availableQuantity;
+	private LocalDateTime backorderedUntil;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	public ProductOption(Product product, ProductOptionOutputDTO dto) {
+		id = dto.getId();
+		this.product = product;
+		active = dto.isActive();
+		name = dto.getName();
+		sku = dto.getSku();
+		availableQuantity = dto.getAvailable_quantity();
+		if (dto.getBackordered_until() != null)
+			backorderedUntil = LocalDateTime.ofInstant(dto.getBackordered_until().toInstant(), ZoneId.systemDefault());
+		createdAt = LocalDateTime.ofInstant(dto.getCreated_at().toInstant(), ZoneId.systemDefault());
+		updatedAt = LocalDateTime.ofInstant(dto.getUpdated_at().toInstant(), ZoneId.systemDefault());
+	}
+
 	public String getId() {
 		return id;
 	}
-	public String getProduct_id() {
-		return product_id;
+	public Product getProduct() {
+		return product;
 	}
 	public boolean isActive() {
 		return active;
@@ -41,16 +55,16 @@ public class ProductOption implements Serializable, IFaireEntity {
 	public String getSku() {
 		return sku;
 	}
-	public int getAvailable_quantity() {
-		return available_quantity;
+	public int getAvailableQuantity() {
+		return availableQuantity;
 	}
-	public Date getBackordered_until() {
-		return backordered_until;
+	public LocalDateTime getBackorderedUntil() {
+		return backorderedUntil;
 	}
-	public Date getCreated_at() {
-		return created_at;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
-	public Date getUpdated_at() {
-		return updated_at;
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
 	}
 }

@@ -3,71 +3,82 @@
  */
 package br.com.paullus.faireconsumer.entities;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import br.com.paullus.faireconsumer.dtos.OrderItemOutputDTO;
 
 /**
- * @author Paullus Martis de Sousa Nava Castro
+ * @author Paullus Martins de Sousa Nava Castro
  *
  */
-public class OrderItem implements Serializable, IFaireEntity{
-	private static final long serialVersionUID = 1L;
-	
+public class OrderItem implements IFaireEntity {
 	private String id;
-	private String order_id;
-	private String product_id;
-	private String product_option_id;
-	private String quantity;
+	private Order order;
+	private Product product;
+	private ProductOption productOption;
+	private long quantity;
 	private String sku;
-	private String price_cents;
-	private String product_name;
-	private String product_option_name;
-	private String includes_tester;
-	private String tester_price_cents;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
-	private Date created_at;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
-	private Date updated_at;
+	private BigDecimal price;
+	private String productName;
+	private String productOptionName;
+	private boolean includesTester;
+	private BigDecimal testerPrice;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	public OrderItem(Order order, Product product, ProductOption productOption, OrderItemOutputDTO dto) {
+		id = dto.getId();
+		this.order = order;
+		this.product = product;
+		this.productOption = productOption;
+		quantity = dto.getQuantity();
+		sku = dto.getSku();
+		price = dto.getPrice_cents().divide(new BigDecimal(100));
+		productName = dto.getProduct_name();
+		productOptionName = dto.getProduct_option_name();
+		includesTester = dto.isIncludes_tester();
+		testerPrice = dto.getTester_price_cents().divide(new BigDecimal(100));
+		createdAt = LocalDateTime.ofInstant(dto.getCreated_at().toInstant(), ZoneId.systemDefault());
+		updatedAt = LocalDateTime.ofInstant(dto.getUpdated_at().toInstant(), ZoneId.systemDefault());
+	}
 	public String getId() {
 		return id;
 	}
-	public String getOrder_id() {
-		return order_id;
+	public Order getOrder() {
+		return order;
 	}
-	public String getProduct_id() {
-		return product_id;
+	public Product getProduct() {
+		return product;
 	}
-	public String getProduct_option_id() {
-		return product_option_id;
+	public ProductOption getProductOption() {
+		return productOption;
 	}
-	public String getQuantity() {
+	public long getQuantity() {
 		return quantity;
 	}
 	public String getSku() {
 		return sku;
 	}
-	public String getPrice_cents() {
-		return price_cents;
+	public BigDecimal getPrice() {
+		return price;
 	}
-	public String getProduct_name() {
-		return product_name;
+	public String getProductName() {
+		return productName;
 	}
-	public String getProduct_option_name() {
-		return product_option_name;
+	public String getProductOptionName() {
+		return productOptionName;
 	}
-	public String getIncludes_tester() {
-		return includes_tester;
+	public boolean isIncludesTester() {
+		return includesTester;
 	}
-	public String getTester_price_cents() {
-		return tester_price_cents;
+	public BigDecimal getTesterPrice() {
+		return testerPrice;
 	}
-	public Date getCreated_at() {
-		return created_at;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
-	public Date getUpdated_at() {
-		return updated_at;
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
 	}
-	
 }

@@ -3,42 +3,50 @@
  */
 package br.com.paullus.faireconsumer.entities;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
+import br.com.paullus.faireconsumer.dtos.OrderOutputDTO;
 import br.com.paullus.faireconsumer.enums.OrderState;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
-public class Order implements Serializable, IFaireEntity {
-	private static final long serialVersionUID = 1L;
-
+public class Order implements IFaireEntity {
 	private String id;
 	private OrderState state;
-	private String ship_after;
+	private LocalDateTime shipAfter;
 	private List<OrderItem> items;
 	private List<Shipment> shipments;
 	private Address address;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
-	private Date created_at;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
-	private Date updated_at;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	public Order(OrderOutputDTO dto) {
+		id = dto.getId();
+		state = dto.getState();
+		if (dto.getShip_after() != null)
+			shipAfter = LocalDateTime.ofInstant(dto.getShip_after().toInstant(), ZoneId.systemDefault());
+		items = new ArrayList<>();
+		shipments = new ArrayList<>();
+		address = new Address(dto.getAddress());
+		createdAt = LocalDateTime.ofInstant(dto.getCreated_at().toInstant(), ZoneId.systemDefault());
+		updatedAt = LocalDateTime.ofInstant(dto.getUpdated_at().toInstant(), ZoneId.systemDefault());
+	}
 	public String getId() {
 		return id;
 	}
 	public OrderState getState() {
 		return state;
 	}
-	public String getShip_after() {
-		return ship_after;
+	public LocalDateTime getShipAfter() {
+		return shipAfter;
 	}
 	public List<OrderItem> getItems() {
-		return items;
+		return Collections.unmodifiableList(items);
 	}
 	public List<Shipment> getShipments() {
 		return shipments;
@@ -46,11 +54,15 @@ public class Order implements Serializable, IFaireEntity {
 	public Address getAddress() {
 		return address;
 	}
-	public Date getCreated_at() {
-		return created_at;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
-	public Date getUpdated_at() {
-		return updated_at;
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+	public OrderItem addItem(OrderItem item) {
+		items.add(item);
+		return item;
 	}
 	@Override
 	public String toString() {

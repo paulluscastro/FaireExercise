@@ -3,51 +3,65 @@
  */
 package br.com.paullus.faireconsumer.entities;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import br.com.paullus.faireconsumer.dtos.ProductOutputDTO;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
-public class Product implements Serializable, IFaireEntity {
-	private static final long serialVersionUID = 1L;
-	
+public class Product implements IFaireEntity {
 	private String id;
-	private String brand_id;
-	private String short_description;
+	private String brandId;
+	private String shortDescription;
 	private String description;
-	private BigDecimal wholesale_price_cents;
-	private BigDecimal retail_price_cents;
+	private BigDecimal wholesalePrice;
+	private BigDecimal retailPrice;
 	private boolean active;
 	private String name;
-	private BigDecimal unit_multiplier;
+	private BigDecimal unitMultiplier;
 	private List<ProductOption> options;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
-	private Date created_at;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
-	private Date updated_at;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	
+	public Product(ProductOutputDTO dto) {
+		id = dto.getId();
+		brandId = dto.getBrand_id();
+		shortDescription = dto.getShort_description();
+		description = dto.getDescription();
+		wholesalePrice = dto.getWholesale_price_cents().divide(new BigDecimal(100));
+		retailPrice = dto.getRetail_price_cents().divide(new BigDecimal(100));
+		active = dto.isActive();
+		name = dto.getName();
+		unitMultiplier = dto.getUnit_multiplier();
+		createdAt = LocalDateTime.ofInstant(dto.getCreated_at().toInstant(), ZoneId.systemDefault());
+		updatedAt = LocalDateTime.ofInstant(dto.getUpdated_at().toInstant(), ZoneId.systemDefault());
+		options = new ArrayList<>();
+		dto.getOptions().stream().forEach(po -> options.add(new ProductOption(this, po)));
+	}
+	
 	public String getId() {
 		return id;
 	}
-	public String getBrand_id() {
-		return brand_id;
+	public String getBrandId() {
+		return brandId;
 	}
-	public String getShort_description() {
-		return short_description;
+	public String getShortDescription() {
+		return shortDescription;
 	}
 	public String getDescription() {
 		return description;
 	}
-	public BigDecimal getWholesale_price_cents() {
-		return wholesale_price_cents;
+	public BigDecimal getWholesalePrice() {
+		return wholesalePrice;
 	}
-	public BigDecimal getRetail_price_cents() {
-		return retail_price_cents;
+	public BigDecimal getRetailPrice() {
+		return retailPrice;
 	}
 	public boolean isActive() {
 		return active;
@@ -55,20 +69,20 @@ public class Product implements Serializable, IFaireEntity {
 	public String getName() {
 		return name;
 	}
-	public BigDecimal getUnit_multiplier() {
-		return unit_multiplier;
+	public BigDecimal getUnitMultiplier() {
+		return unitMultiplier;
 	}
 	public List<ProductOption> getOptions() {
 		return options;
 	}
-	public Date getCreated_at() {
-		return created_at;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
-	public Date getUpdated_at() {
-		return updated_at;
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
 	}
 	@Override
 	public String toString() {
-		return "[Id: '" + id + "', Brand_id = '" + brand_id + "', Name: '" + name + "', Short description: '" + short_description + "']";
+		return "[Id: '" + id + "', Brand_id = '" + brandId + "', Name: '" + name + "', Short description: '" + shortDescription + "']";
 	}
 }

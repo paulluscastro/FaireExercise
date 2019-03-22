@@ -3,26 +3,49 @@
  */
 package br.com.paullus.faireconsumer.entities;
 
-import java.io.Serializable;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import br.com.paullus.faireconsumer.dtos.AddressOutputDTO;
 
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
-public class Address implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class Address implements IFaireEntity {
+    private static final Logger logger = LoggerFactory.getLogger(Address.class);
 	
+	private String id;
 	private String name;
 	private String address1;
 	private String address2;
-	private String postal_code;
+	private String postalCode;
 	private String city;
 	private String state;
-	private String state_code;
-	private String phone_number;
+	private String stateCode;
+	private String phoneNumber;
 	private String country;
-	private String country_code;
-	private String company_name;
+	private String countryCode;
+	private String companyName;
+	public Address(AddressOutputDTO dto) {
+		id = "ad_" + UUID.randomUUID().toString();
+		name = dto.getName();
+		address1 = dto.getAddress1();
+		address2 = dto.getAddress2();
+		postalCode = dto.getPostal_code();
+		city = dto.getCity();
+		state = dto.getState();
+		stateCode = dto.getState_code();
+		phoneNumber = dto.getPhone_number();
+		country = dto.getCountry();
+		countryCode = dto.getCountry_code();
+		companyName = dto.getCompany_name();
+	}
+	public String getId() {
+		return id;
+	}
 	public String getName() {
 		return name;
 	}
@@ -32,8 +55,8 @@ public class Address implements Serializable {
 	public String getAddress2() {
 		return address2;
 	}
-	public String getPostal_code() {
-		return postal_code;
+	public String getPostalCode() {
+		return postalCode;
 	}
 	public String getCity() {
 		return city;
@@ -41,20 +64,19 @@ public class Address implements Serializable {
 	public String getState() {
 		return state;
 	}
-	public String getState_code() {
-		return state_code;
+	public String getStateCode() {
+		return stateCode;
 	}
-	public String getPhone_number() {
-		return phone_number;
+	public String getPhoneNumber() {
+		return phoneNumber;
 	}
 	public String getCountry() {
 		return country;
 	}
-	public String getCountry_code() {
-		return country_code;
+	public String getCountryCode() {
+		return countryCode;
 	}
-	public String getCompany_name() {
-		return company_name;
+	public String getCompanyName() {
+		return companyName;
 	}
-	
 }
