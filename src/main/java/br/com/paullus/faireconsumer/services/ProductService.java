@@ -84,5 +84,10 @@ public class ProductService implements IProductService {
 		}
 		return option;
 	}
+	@Override
+	public List<ProductOutputDTO> updateLocalInventories() {
+        products.clear();
+		return list();
+	}
 	
 }

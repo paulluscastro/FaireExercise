@@ -25,6 +25,7 @@ import br.com.paullus.faireconsumer.connection.IFaireConnection;
 import br.com.paullus.faireconsumer.dtos.BackorderItemInputDTO;
 import br.com.paullus.faireconsumer.dtos.BestBuyerOutputDTO;
 import br.com.paullus.faireconsumer.dtos.BestSellerOutputDTO;
+import br.com.paullus.faireconsumer.dtos.InventoryLevelUpdateInputDTO;
 import br.com.paullus.faireconsumer.dtos.OrderItemOutputDTO;
 import br.com.paullus.faireconsumer.dtos.OrderOutputDTO;
 import br.com.paullus.faireconsumer.dtos.OrdersSearchOutputDTO;
@@ -124,13 +125,21 @@ public class OrderService implements IOrderService {
 	}
 	private void updateLevels(OrderOutputDTO order)
 	{
+		InventoryLevelUpdateInputDTO inventoryUpdate = new InventoryLevelUpdateInputDTO();
 		order.getItems().stream().forEach(oi ->{
 			ProductOutputDTO product = productService.get(oi.getProduct_id());
 			product.getOptions()
 				.stream()
 				.filter(po -> po.getId().equals(oi.getProduct_option_id()))
-				.forEach(po -> po.sell(oi.getQuantity()));
+				.forEach(po -> {
+					po.sell(oi.getQuantity());
+					// inventoryUpdate.add(new ProductOptionInventoryLevelUpdateInputDTO(oi.getSku(), oi.getQuantity()));
+				});
 		});
+		// final String url = "https://www.faire.com/api/v1/products/options/inventory-levels";
+		// HttpEntity<InventoryLevelUpdateInputDTO> request = new HttpEntity<InventoryLevelUpdateInputDTO>(inventoryUpdate, connection.getHeaders());
+		// InventoryLevelUpdateOutputDTO output = connection.getRestTemplate().postForObject(url, request, InventoryLevelUpdateOutputDTO.class);
+		// productService.updateLocalInventories();
 	}
 	private OrderOutputDTO createBackorder(OrderOutputDTO order)
 	{

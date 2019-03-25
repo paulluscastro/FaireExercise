@@ -10,4 +10,5 @@ public interface IProductService {
 	List<ProductOutputDTO> list();
 	List<ProductOutputDTO> listByBrand(String brandId);
 	ProductOptionOutputDTO findOption(String productOptionId);
+	List<ProductOutputDTO> updateLocalInventories();
 }
