@@ -3,7 +3,6 @@
  */
 package br.com.paullus.faireconsumer.application;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
@@ -15,7 +14,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 
 import br.com.paullus.faireconsumer.dtos.BestBuyerOutputDTO;
 import br.com.paullus.faireconsumer.dtos.BestSellerOutputDTO;
@@ -29,7 +27,6 @@ import br.com.paullus.faireconsumer.services.IProductService;
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
-@ComponentScan("br.com.paullus.faireconsumer")
 @SpringBootApplication
 public class FaireConsumerApplication implements ApplicationRunner {
     private static final Logger logger = LoggerFactory.getLogger(FaireConsumerApplication.class);
