@@ -39,12 +39,19 @@ public class OrderService implements IOrderService {
 	private IProductService productService;
 
 	private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
+	private List<OrderOutputDTO> orders = null;
 	private List<ProductOutputDTO> products = null;
 	
+	
+	private List<OrderOutputDTO> getAllOrders(){
+		if (orders == null)
+			orders = orderRepository.list();
+		return Collections.unmodifiableList(orders);
+	}
 	private List<ProductOutputDTO> getAllProducts(){
 		if (products == null)
 			products = productService.list();
-		return products;
+		return Collections.unmodifiableList(products);
 	}
 	
 	private ProductOutputDTO getProduct(String id){
@@ -67,7 +74,7 @@ public class OrderService implements IOrderService {
 
     @Override
 	public List<OrderOutputDTO> list() {
-        return Collections.unmodifiableList(orderRepository.list());
+        return getAllOrders();
 	}
 	
 	private boolean checkAllProductsExist(OrderOutputDTO order)
@@ -234,7 +241,7 @@ public class OrderService implements IOrderService {
 	@Override
 	public WorstSellerOutputDTO getNotSoldWithHighestStock() {
 		List<ProductOptionOutputDTO> stock = new ArrayList<>();
-		productService.list()
+		getAllProducts()
 			.stream()
 			.forEach(p -> stock.addAll(p.getOptions()));
 		list()

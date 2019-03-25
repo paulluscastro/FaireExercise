@@ -10,6 +10,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -34,13 +35,39 @@ public class FaireConsumerApplication implements ApplicationRunner {
     private IProductService productService;
     @Autowired
     private IOrderService orderService;
+	@Value("${key:}")
+	private String key;
     
 	public static void main(String args[]) {
 		SpringApplication.run(FaireConsumerApplication.class, args);
 	}
+	
+	private void printHelpScreen()
+	{
+	    System.out.print("\033[H\033[2J");  
+	    System.out.flush();
+		System.out.println("Usage: java -jar faireConsumer-0.0.1-SNAPSHOT.jar --key=<KEY> [args]");
+		System.out.println("           (to execute the compiled JAR)");
+		System.out.println("   or  mvn clean compile exec:java -Dkey=<KEY> [args]");
+		System.out.println("           (to compile and execute the program with Maven)");
+		System.out.println("");
+		System.out.println("Where <KEY> is the Token Access Key provided by Faire.");
+		System.out.println("");
+		System.out.println("Optional accepted arguments are related to proxy:");
+		System.out.println("    --useProxy=TRUE (or FALSE)");
+		System.out.println("    --proxy.server=<PROXY SERVER ADDRESS>");
+		System.out.println("    --proxy.port=<PROXY SERVER PORT>");
+		System.out.println("    --proxy.user=<PROXY USER NAME>");
+		System.out.println("    --proxy.password=<PROXY PASSWORD>");
+	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		if (key == null || key.contentEquals(""))
+		{
+			printHelpScreen();
+			return;
+		}
 		String teaDropsId = "b_d2481b88";
 		List<ProductOutputDTO> products = productService.listByBrand(teaDropsId);
 		logger.info("***************************** LISTING ALL PRODUCTS *****************************");
