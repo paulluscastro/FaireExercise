@@ -3,24 +3,31 @@
  */
 package br.com.paullus.faireconsumer.dtos;
 
+import java.math.BigDecimal;
+
 /**
  * @author Paullus Martins de Sousa Nava Castro
  *
  */
 public class BestSellerOutputDTO {
+	private ProductOutputDTO product;
 	private ProductOptionOutputDTO option;
-	private long ammount;
-	public BestSellerOutputDTO(ProductOptionOutputDTO option, long ammount) {
+	private BigDecimal ammount;
+	public BestSellerOutputDTO(ProductOutputDTO product, ProductOptionOutputDTO option, long ammount) {
+		this.product = product;
 		this.option = option;
-		this.ammount = ammount;
+		this.ammount = new BigDecimal(ammount);
 	}
 	public ProductOptionOutputDTO getOption() {
 		return option;
 	}
-	public void add(long quantity) {
-		ammount += quantity;
+	public ProductOutputDTO getProduct() {
+		return product;
 	}
-	public long getAmmount() {
+	public void add(BigDecimal quantity) {
+		ammount = ammount.add(quantity);
+	}
+	public BigDecimal getAmmount() {
 		return ammount;
 	}
 }

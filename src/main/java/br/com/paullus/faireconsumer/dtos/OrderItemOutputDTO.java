@@ -7,8 +7,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.springframework.data.annotation.Transient;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -33,8 +31,8 @@ public class OrderItemOutputDTO implements Serializable {
 	private Date created_at;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd'T'HHmmss.SSS'Z'")
 	private Date updated_at;
-	@Transient
-	private boolean backordered = false;
+	private transient boolean backordered = false;
+	private transient long availableQuantity;
 	public String getId() {
 		return id;
 	}
@@ -74,11 +72,14 @@ public class OrderItemOutputDTO implements Serializable {
 	public Date getUpdated_at() {
 		return updated_at;
 	}
-	public void backorder() {
+	public void backorder(long availableQuantity) {
 		backordered = true;
+		this.availableQuantity = availableQuantity; 
 	}
 	public boolean isBackorderered() {
 		return backordered;
 	}
-	
+	public long getAvailableQuantity() {
+		return availableQuantity;
+	}
 }
